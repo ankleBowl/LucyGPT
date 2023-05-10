@@ -1,0 +1,6 @@
+What skills do we want to train Lucy on???
+
+- Play music on x platform where {x | x = Spotify or x = Apple Music};
+- Weather forecast (for different times and places)
+- Timers, Alarms, Reminders, Calculator, etc...
+- Search (but powered by ChatGPT for now bc it's easier)
