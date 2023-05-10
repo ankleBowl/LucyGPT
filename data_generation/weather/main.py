@@ -87,6 +87,11 @@ def get_utterence():
         elif x == "PLACE":
             pass
         elif x == "DETAIL" or x == "PPDETAIL":
+            detail_type = 0
+            if isPresentParticiple:
+                detail_type = 1
+            detail = None
+            output += random.choice(details[detail_type])
             pass
         else:
             output += random.choice(parts_to_options[x])
