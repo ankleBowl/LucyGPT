@@ -152,7 +152,7 @@ def get_utterence():
             commands_temp, response_temp = get_current_playing_utterence()
         if pick == 4:
             commands_temp, response_temp = get_current_volume_utterence()
-        commands += [commands_temp]
+        commands += commands_temp
         response += response_temp
     return commands, response
     
@@ -194,7 +194,7 @@ def get_control_playback_utterence():
         else:
             utterence = random.choice(pause)
         output = ["INCOMING: " + utterence, ">>> " + feature_commands["control_playback"][0] + "(\"PAUSE\")"]
-        return utterence, output
+        return [utterence], output
     elif option == 2:
         forward = [
             ["go", True],
@@ -222,7 +222,7 @@ def get_control_playback_utterence():
         if needsForwardModifierModifier:
             utterence += " " + random.choice(forward_modifiers_modifiers)
         output = ["INCOMING: " + utterence, ">>> " + feature_commands["control_playback"][0] + "(\"NEXT\")"]
-        return utterence, output
+        return [utterence], output
     elif option == 3:
         # BACK
         back = [
@@ -251,7 +251,7 @@ def get_control_playback_utterence():
         if needsBackModifierModifier:
             utterence += " " + random.choice(back_modifiers_modifiers)
         output = ["INCOMING: " + utterence, ">>> " + feature_commands["control_playback"][0] + "(\"BACK\")"]
-        return utterence, output
+        return [utterence], output
 
 def get_volume_utterence():
     volume = random.randint(0, 100)
@@ -274,7 +274,7 @@ def get_volume_utterence():
     utterence = rand_volume_option + " " + str(volume) + "%"    
 
     output = ["INCOMING: " + utterence, ">>> " + feature_commands["set_volume"][0] + "(" + str(volume) + ")"]
-    return utterence, output
+    return [utterence], output
 
 def get_volume_increment_utterence():
     volume_increment_phrases = [
@@ -304,7 +304,7 @@ def get_volume_increment_utterence():
 
     output = ["INCOMING: " + rand_increment_option, ">>> " +  feature_commands["get_volume"][0] + "()", str(rand_volume), ">>> " + feature_commands["set_volume"][0] + "(" + str(rand_volume) + " + 15)"]
 
-    return rand_increment_option, output
+    return [rand_increment_option], output
 
 def get_volume_decrement_utterence():
     volume_decrement_phrases = [
@@ -334,7 +334,7 @@ def get_volume_decrement_utterence():
 
     output = ["INCOMING: " + rand_decrement_option, ">>> " + feature_commands["get_volume"][0] + "()", str(rand_volume), ">>> " + feature_commands["set_volume"][0] + "(" + str(rand_volume) + " - 15)"]
 
-    return rand_decrement_option, output
+    return [rand_decrement_option], output
 
 def get_song_utterence(force_is_plural=False, force_artist=["NONE", "NONE"], force_album=["NONE", "NONE"]):
     is_queue_request = random.randint(0, 1) == 1
@@ -490,7 +490,7 @@ def get_song_utterence(force_is_plural=False, force_artist=["NONE", "NONE"], for
     
     output += [">>> " + feature_commands["play_song"][0] + "(\"" + search_query.strip() + "\", " + str(not is_queue_request).lower() + ", " + str(song_count) + ")"]
 
-    return utterence[:-1].lower(), output
+    return [utterence[:-1].lower()], output
 
 def get_current_playing_utterence():
     verb = [
@@ -532,8 +532,9 @@ def get_current_playing_utterence():
         "Playing now is " + song_name + " by " + artist_name,
     ]
     output.append(">>> self.say(\"" + random.choice(reply_options) + "\")")
+    utterence = [utterence]
 
-    shouldHaveTrailingCommand = random.choice([True, True])
+    shouldHaveTrailingCommand = random.choice([True, False])
     if shouldHaveTrailingCommand:
         choice = random.randint(0, 1)
         # Play that song again
@@ -550,6 +551,7 @@ def get_current_playing_utterence():
         if choice == 2:
             pass
         output += commands
+        utterence += followup_utterence
 
     return utterence, output
 
@@ -600,7 +602,7 @@ def get_current_volume_utterence():
         skeleton = skeleton.replace(option, "")
 
     output.append(">>> self.say(\"" + skeleton + "\")")
-    return utterence, output
+    return [utterence], output
 
 if __name__ == "__main__":
     # print(get_commands())
@@ -608,5 +610,5 @@ if __name__ == "__main__":
     print(get_commands())
     response, response1 = get_current_playing_utterence()
     # response, response1 = get_song_utterence()
-    for x in response1:
+    for x in response:
         print(x)
