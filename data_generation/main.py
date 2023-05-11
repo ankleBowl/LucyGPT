@@ -38,6 +38,11 @@ def generate_request_prompt(feature):
 
     prompt += "Write the code necessary to achieve the following:\n"
     query, code = feature.get_utterence()
+    shouldBeDouble = random.choice([True, False, False, False])
+    if shouldBeDouble:
+        query1, code1 = feature.get_utterence()
+        query = query.strip() + " and " + query1.strip()
+        code += code1
     prompt += "- " + query
 
     answer = code
@@ -48,14 +53,8 @@ def format_request_prompt_and_answer(feature):
     final_output = ""
     final_output += prompt
     final_output += "\n\n"
-
-    i = 0
     for x in answer:
-        i += 1
-        if i % 2 == 1:
-            final_output += ">>> " + x + "\n"
-        else:
-            final_output += x + "\n"
+        final_output += x + "\n"
     return final_output
 
 def format_tool_prompt_and_answer(feature):
@@ -67,15 +66,16 @@ def format_tool_prompt_and_answer(feature):
     return output
 
 if __name__ == "__main__":
-    with open("data.txt", "w") as f:
-        index = 0
-        for x in range(4000):
-            feature = features[index]
-            index = (index + 1) % len(features)
-            f.write(format_request_prompt_and_answer(feature))
-            f.write("---\n")
-        for x in range(2000):
-            feature = features[index]
-            index = (index + 1) % len(features)
-            f.write(format_tool_prompt_and_answer(feature))
-            f.write("---\n")
+    print(format_request_prompt_and_answer(music))
+    # with open("data.txt", "w") as f:
+    #     index = 0
+    #     for x in range(4000):
+    #         feature = features[index]
+    #         index = (index + 1) % len(features)
+    #         f.write(format_request_prompt_and_answer(feature))
+    #         f.write("---\n")
+    #     for x in range(2000):
+    #         feature = features[index]
+    #         index = (index + 1) % len(features)
+    #         f.write(format_tool_prompt_and_answer(feature))
+    #         f.write("---\n")

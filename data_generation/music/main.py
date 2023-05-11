@@ -106,15 +106,18 @@ def get_commands():
     get_current_playing = feature_name.lower() + "." + currently_playing_command
 
     feature_commands = {
-        "play_song": [ play_song, play_song + "(\"query\")"],
+        "play_song": [ play_song, play_song + "(\"query\", play_now)"],
         "set_volume": [ set_volume, set_volume + "(percentage)"],
         "get_volume": [ get_volume, get_volume + "()"],
         "control_playback": [ control_playback, control_playback + "(\"option\") # \"PLAY\", \"PAUSE\", \"NEXT\", \"BACK\""],
         "get_current_playing": [ get_current_playing, get_current_playing + "()"],
     }
     
+    keys = list(feature_commands.keys())
+    random.shuffle(keys)
+
     string_representation = ""
-    for key in feature_commands:
+    for key in keys:
         string_representation += feature_commands[key][1] + "\n"
     return string_representation
 
@@ -126,7 +129,7 @@ song_descriptors = [
 ]
 
 def get_utterence():
-    pick = random.randint(0, 3)
+    pick = random.randint(0, 4)
     if pick == 0:
         return get_song_utterence()
     if pick == 1:
@@ -141,6 +144,8 @@ def get_utterence():
         return get_control_playback_utterence()
     if pick == 3:
         return get_current_playing_utterence()
+    if pick == 4:
+        return get_current_volume_utterence()
     
 def get_control_playback_utterence():
     option = random.randint(0, 3)
@@ -179,7 +184,7 @@ def get_control_playback_utterence():
             utterence = random.choice(pause) + " the " + random.choice(song_descriptors)
         else:
             utterence = random.choice(pause)
-        output = feature_commands["control_playback"][0] + "(\"PAUSE\")"
+        output = ">>> " + feature_commands["control_playback"][0] + "(\"PAUSE\")"
         return utterence, [output]
     elif option == 2:
         forward = [
@@ -207,7 +212,7 @@ def get_control_playback_utterence():
             utterence += " " + random.choice(forward_modifiers).replace("(SONG_VOCAB_WORD)", random.choice(song_descriptors))
         if needsForwardModifierModifier:
             utterence += " " + random.choice(forward_modifiers_modifiers)
-        output = feature_commands["control_playback"][0] + "(\"NEXT\")"
+        output = ">>> " + feature_commands["control_playback"][0] + "(\"NEXT\")"
         return utterence, [output]
     elif option == 3:
         # BACK
@@ -236,7 +241,7 @@ def get_control_playback_utterence():
             utterence += " " + random.choice(back_modifiers).replace("(SONG_VOCAB_WORD)", random.choice(song_descriptors))
         if needsBackModifierModifier:
             utterence += " " + random.choice(back_modifiers_modifiers)
-        output = feature_commands["control_playback"][0] + "(\"BACK\")"
+        output = ">>> " + feature_commands["control_playback"][0] + "(\"BACK\")"
         return utterence, [output]
 
 def get_volume_utterence():
@@ -259,7 +264,7 @@ def get_volume_utterence():
 
     utterence = rand_volume_option + " " + str(volume) + "%"    
 
-    output = feature_commands["set_volume"][0] + "(" + str(volume) + ")"
+    output = ">>> " + feature_commands["set_volume"][0] + "(" + str(volume) + ")"
     return utterence, [output]
 
 def get_volume_increment_utterence():
@@ -280,7 +285,6 @@ def get_volume_increment_utterence():
         "a lot"
     ]
 
-    utterence = ""
     rand_increment_option = random.choice(volume_increment_phrases)
     shouldAddModifier = random.randint(0, 1) == 1
     if shouldAddModifier:
@@ -289,7 +293,7 @@ def get_volume_increment_utterence():
 
     rand_volume = random.randint(0, 100)
 
-    return rand_increment_option, [feature_commands["get_volume"][0] + "()", str(rand_volume), feature_commands["set_volume"][0] + "(" + str(rand_volume) + " + 15)"]
+    return rand_increment_option, [">>> " +  feature_commands["get_volume"][0] + "()", str(rand_volume), ">>> " + feature_commands["set_volume"][0] + "(" + str(rand_volume) + " + 15)"]
 
 def get_volume_decrement_utterence():
     volume_decrement_phrases = [
@@ -309,7 +313,6 @@ def get_volume_decrement_utterence():
         "a lot"
     ]
 
-    utterence = ""
     rand_decrement_option = random.choice(volume_decrement_phrases)
     shouldAddModifier = random.randint(0, 1) == 1
     if shouldAddModifier:
@@ -318,9 +321,11 @@ def get_volume_decrement_utterence():
     
     rand_volume = random.randint(0, 100)
 
-    return rand_decrement_option, [feature_commands["get_volume"][0] + "()", str(rand_volume), feature_commands["set_volume"][0] + "(" + str(rand_volume) + " - 15)"]
+    return rand_decrement_option, [">>> " + feature_commands["get_volume"][0] + "()", str(rand_volume), ">>> " + feature_commands["set_volume"][0] + "(" + str(rand_volume) + " - 15)"]
 
 def get_song_utterence():
+    is_queue_request = random.randint(0, 1) == 1
+
     starters = [
         "play",
         "put on",
@@ -341,7 +346,19 @@ def get_song_utterence():
         "please",
     ]
 
+    queue = [
+        "queue",
+    ]
+
+    later = [
+        "later",
+        "after this one",
+        "next",
+    ]
+
     fragments = {
+        "QUEUE": queue,
+        "LATER": later,
         "START": starters,
         "BY": by,
         "FROM": from_array,
@@ -356,15 +373,21 @@ def get_song_utterence():
     album = song[2].replace("(", "").replace(")", "")
 
     parts = []
-
-    # shouldAddStarter = random.randint(0, 1) == 1
-    shouldAddStarter = True
-    if shouldAddStarter:
+    should_add_later = False
+    if not is_queue_request:
         parts.append("START")
-        shouldAddSongVocabWord = random.randint(0, 1) == 1
-        if shouldAddSongVocabWord:
-            parts.append("SONG_VOCAB_WORD")
+    else:
+        start_should_async = random.randint(0, 1) == 1
+        if start_should_async:
+            parts.append("QUEUE")
+            should_add_later = random.randint(0, 1) == 1
+        else:
+            parts.append("START")
+            should_add_later = True
 
+    shouldAddSongVocabWord = random.randint(0, 1) == 1
+    if shouldAddSongVocabWord:
+        parts.append("SONG_VOCAB_WORD")
 
     shouldAddSongName = random.randint(0, 1) == 1
     shouldAddArtist = random.randint(0, 1) == 1
@@ -394,6 +417,9 @@ def get_song_utterence():
         parts.append("FROM")
         parts.append("ALBUM")
 
+    if should_add_later:
+        parts.append("LATER")
+
     shouldAddPlease = random.randint(0, 1) == 1
     if shouldAddPlease:
         parts.append("PLEASE")
@@ -422,7 +448,7 @@ def get_song_utterence():
     if shouldAddAlbum:
         search_query += " " + album
     
-    output += feature_commands["play_song"][0] + "(\"" + search_query.strip() + "\")"
+    output += ">>> " + feature_commands["play_song"][0] + "(\"" + search_query.strip() + "\", " + str(not is_queue_request).lower() + ")"
     return utterence[:-1].lower(), [output]
 
 def get_current_playing_utterence():
@@ -442,7 +468,7 @@ def get_current_playing_utterence():
     utterence = utterence.replace("(VERB)", random.choice(verb))
     utterence = utterence.replace("(SONG_VOCAB_WORD)", random.choice(song_descriptors))
     
-    output = [feature_commands["get_current_playing"][0] + "()"]
+    output = [">>> " + feature_commands["get_current_playing"][0] + "()"]
 
     random_song = random.choice(songs)
     song_name = random_song[0]
@@ -460,10 +486,59 @@ def get_current_playing_utterence():
         "The song that's currently on is " + song_name + " by " + artist_name,
         "Playing now is " + song_name + " by " + artist_name,
     ]
-    output.append("self.say(\"" + random.choice(reply_options) + "\")")
+    output.append(">>> self.say(\"" + random.choice(reply_options) + "\")")
     return utterence, output
 
+def get_current_volume_utterence():
+    begins = [
+        "what's",
+        "what is",
+        "tell me",
+        "i want to know",
+        "i'd like to know",
+    ]
+
+    begins_later = [
+        "the volume",
+        "the loudness",
+        "how loud it is",
+        "how loud the music is",
+        "how loud the volume is",
+    ]
+
+    utterence = random.choice(begins) + " " + random.choice(begins_later) + " " + random.choice(["currently ", "right now ", ""])
+    output = [">>> " + feature_commands["get_volume"][0] + "()"]
+    volume_level = random.randint(0, 100)
+    output.append(str(volume_level))
+
+    reply_skeletons = [
+        "The volume(OPTION) is(OPTION2) " + str(volume_level) + " percent(OPTION1)",
+        "The volume(OPTION) is(OPTION2) at " + str(volume_level) + " percent(OPTION1)",
+        "It's " + str(volume_level) + " percent(OPTION1)(OPTION)(OPTION2)",
+    ]
+
+    currently_options = [
+        "currently",
+        "right now",
+        "at this moment",
+    ]
+
+    skeleton = random.choice(reply_skeletons)
+
+    options = ["(OPTION)", "(OPTION1)", "(OPTION2)", ""]
+    selected_option = random.choice(options)
+
+    if selected_option != "":
+        skeleton = skeleton.replace(selected_option, " " + random.choice(currently_options))
+
+    for option in options:
+        skeleton = skeleton.replace(option, "")
+
+    output.append(">>> self.say(\"" + skeleton + "\")")
+    return utterence, output
 
 if __name__ == "__main__":
+    # print(get_commands())
+    # print(get_utterence())
     print(get_commands())
-    print(get_utterence())
+    print(get_song_utterence())
