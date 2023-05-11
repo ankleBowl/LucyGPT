@@ -36,15 +36,8 @@ def generate_request_prompt(feature):
     prompt += 'say("message")\n'
     prompt += feature.get_commands().strip() + "\n\n"
 
-    prompt += "Write the code necessary to achieve the following:\n"
+    prompt += "Write the code necessary to achieve your goals:\n\n"
     query, code = feature.get_utterence()
-    shouldBeDouble = random.choice([True, False, False, False])
-    if shouldBeDouble:
-        query1, code1 = feature.get_utterence()
-        query = query.strip() + " and " + query1.strip()
-        code += code1
-    prompt += "- " + query
-
     answer = code
     return prompt, answer
 
@@ -52,7 +45,6 @@ def format_request_prompt_and_answer(feature):
     prompt, answer = generate_request_prompt(feature)
     final_output = ""
     final_output += prompt
-    final_output += "\n\n"
     for x in answer:
         final_output += x + "\n"
     return final_output
@@ -61,7 +53,6 @@ def format_tool_prompt_and_answer(feature):
     prompt, answer = generate_tool_prompt(feature)
     output = ""
     output += prompt
-    output += "\n\n"
     output += ">>> " + answer + "\n"
     return output
 
