@@ -8,17 +8,115 @@ from songs import songs
 
 import random
 
+feature_name = "Spotify"
+feature_commands = []
+
 def get_name():
-    return "Spotify"
+    return feature_name
 
 def get_commands():
-    return """
-spotify.play_song("query")
-spotify.set_volume(percentage)
-spotify.get_volume()
-spotify.control_playback("option") # "PLAY", "PAUSE", "NEXT", "BACK"
-spotify.get_current_playing()
-"""
+    global feature_commands
+    global feature_name
+
+    app_name_options = [
+        "Spotify",
+        "Music",
+        "Pandora",
+    ]
+
+    feature_name = random.choice(app_name_options)
+
+    play_verb_options = [
+        "play",
+        "start",
+        "begin",
+    ]
+
+    play_song_options = [
+        "",
+        "_song",
+        "_track",
+        "_tune",
+        "_music",
+    ]
+
+    play_song_command = random.choice(play_verb_options) + random.choice(play_song_options)
+
+    set_volume_options = [
+        "_volume",
+        "_loudness",
+        "_sound",
+        "_audio",
+    ]
+
+    volume_noun = random.choice(set_volume_options)
+
+    set_volume_verb_options = [
+        "set",
+        "change",
+        "adjust",
+        "modify",
+        "alter",
+        "update",
+    ]
+
+    set_volume_command = random.choice(set_volume_verb_options) + volume_noun
+
+    get_volume_verb_options = [
+        "get",
+        "retrieve",
+        "obtain",
+        "fetch",
+        "find",
+    ]
+
+    get_volume_command = random.choice(get_volume_verb_options) + volume_noun
+
+    control_playback_verb_options = [
+        "control",
+        "manage",
+        "set",
+        "change",
+    ]
+
+    control_playback_noun_options = [
+        "_playback",
+        "_audio_playback",
+        "_stream",
+        "_audio_stream",
+    ]
+
+    control_playback_command = random.choice(control_playback_verb_options) + random.choice(control_playback_noun_options)
+    
+    currently_playing_noun_options = [
+        "_currently_playing",
+        "_current_playing",
+        "_current_song",
+        "_active_song",
+        "_active_playing",
+        "_actively_playing",
+    ]
+
+    currently_playing_command = random.choice(get_volume_verb_options) + random.choice(currently_playing_noun_options)
+
+    play_song = feature_name.lower() + "." + play_song_command
+    set_volume = feature_name.lower() + "." + set_volume_command
+    get_volume = feature_name.lower() + "." + get_volume_command
+    control_playback = feature_name.lower() + "." + control_playback_command
+    get_current_playing = feature_name.lower() + "." + currently_playing_command
+
+    feature_commands = {
+        "play_song": [ play_song, play_song + "(\"query\")"],
+        "set_volume": [ set_volume, set_volume + "(percentage)"],
+        "get_volume": [ get_volume, get_volume + "()"],
+        "control_playback": [ control_playback, control_playback + "(\"option\") # \"PLAY\", \"PAUSE\", \"NEXT\", \"BACK\""],
+        "get_current_playing": [ get_current_playing, get_current_playing + "()"],
+    }
+    
+    string_representation = ""
+    for key in feature_commands:
+        string_representation += feature_commands[key][1] + "\n"
+    return string_representation
 
 song_descriptors = [
     "song",
@@ -61,7 +159,7 @@ def get_control_playback_utterence():
             utterence = random.choice(play) + " the " + random.choice(song_descriptors)
         else:
             utterence = random.choice(play)
-        output = "spotify.control_playback(\"PLAY\")"
+        output = feature_commands["control_playback"][0] + "(\"PLAY\")"
         return utterence, [output]
     elif option == 1:
         # PAUSE
@@ -81,7 +179,7 @@ def get_control_playback_utterence():
             utterence = random.choice(pause) + " the " + random.choice(song_descriptors)
         else:
             utterence = random.choice(pause)
-        output = "spotify.control_playback(\"PAUSE\")"
+        output = feature_commands["control_playback"][0] + "(\"PAUSE\")"
         return utterence, [output]
     elif option == 2:
         forward = [
@@ -109,7 +207,7 @@ def get_control_playback_utterence():
             utterence += " " + random.choice(forward_modifiers).replace("(SONG_VOCAB_WORD)", random.choice(song_descriptors))
         if needsForwardModifierModifier:
             utterence += " " + random.choice(forward_modifiers_modifiers)
-        output = "spotify.control_playback(\"NEXT\")"
+        output = feature_commands["control_playback"][0] + "(\"NEXT\")"
         return utterence, [output]
     elif option == 3:
         # BACK
@@ -138,7 +236,7 @@ def get_control_playback_utterence():
             utterence += " " + random.choice(back_modifiers).replace("(SONG_VOCAB_WORD)", random.choice(song_descriptors))
         if needsBackModifierModifier:
             utterence += " " + random.choice(back_modifiers_modifiers)
-        output = "spotify.control_playback(\"BACK\")"
+        output = feature_commands["control_playback"][0] + "(\"BACK\")"
         return utterence, [output]
 
 def get_volume_utterence():
@@ -161,7 +259,7 @@ def get_volume_utterence():
 
     utterence = rand_volume_option + " " + str(volume) + "%"    
 
-    output = "spotify.set_volume(" + str(volume) + ")"
+    output = feature_commands["set_volume"][0] + "(" + str(volume) + ")"
     return utterence, [output]
 
 def get_volume_increment_utterence():
@@ -191,7 +289,7 @@ def get_volume_increment_utterence():
 
     rand_volume = random.randint(0, 100)
 
-    return rand_increment_option, ["spotify.get_volume()", str(rand_volume), "spotify.set_volume(" + str(rand_volume) + " + 15)"]
+    return rand_increment_option, [feature_commands["get_volume"][0] + "()", str(rand_volume), feature_commands["set_volume"][0] + "(" + str(rand_volume) + " + 15)"]
 
 def get_volume_decrement_utterence():
     volume_decrement_phrases = [
@@ -220,7 +318,7 @@ def get_volume_decrement_utterence():
     
     rand_volume = random.randint(0, 100)
 
-    return rand_decrement_option, ["spotify.get_volume()", str(rand_volume), "spotify.set_volume(" + str(rand_volume) + " - 15)"]
+    return rand_decrement_option, [feature_commands["get_volume"][0] + "()", str(rand_volume), feature_commands["set_volume"][0] + "(" + str(rand_volume) + " - 15)"]
 
 def get_song_utterence():
     starters = [
@@ -324,7 +422,7 @@ def get_song_utterence():
     if shouldAddAlbum:
         search_query += " " + album
     
-    output += "spotify.play_song(\"" + search_query.strip() + "\")"
+    output += feature_commands["play_song"][0] + "(\"" + search_query.strip() + "\")"
     return utterence[:-1].lower(), [output]
 
 def get_current_playing_utterence():
@@ -344,7 +442,7 @@ def get_current_playing_utterence():
     utterence = utterence.replace("(VERB)", random.choice(verb))
     utterence = utterence.replace("(SONG_VOCAB_WORD)", random.choice(song_descriptors))
     
-    output = ["spotify.get_current_playing()"]
+    output = [feature_commands["get_current_playing"][0] + "()"]
 
     random_song = random.choice(songs)
     song_name = random_song[0]
@@ -367,7 +465,5 @@ def get_current_playing_utterence():
 
 
 if __name__ == "__main__":
-    ques, ans = get_current_playing_utterence()
-    print("QUESTION: " + ques + "\n")
-    for x in ans:
-        print("ANSWER: " + x + "\n")
+    print(get_commands())
+    print(get_utterence())
