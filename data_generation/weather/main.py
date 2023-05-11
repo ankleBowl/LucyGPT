@@ -11,7 +11,7 @@ feature_name = "Weather"
 feature_commands = []
 
 def get_name():
-    return "Weather"
+    return feature_name
 
 def get_commands():
     global feature_commands

@@ -18,14 +18,14 @@ features = [
 ]
 
 def generate_tool_prompt(feature):
-    feature.get_commands()
     queries, _ = feature.get_utterence()
     prompt = ""
     answer = ""
     for query in queries:
         prompt += "You are Lucy, a virtual assistant developed by Lye Software. You have the following tools available to you:\n"
-        for feature in features:
-            prompt += f"- {feature.get_name()}\n"
+        for f in features:
+            f.get_commands()
+            prompt += f"- {f.get_name()}\n"
         prompt += "\n"
         prompt += "Decide the most relevant tool to answer the following input:\n"
         prompt += "- " + query
