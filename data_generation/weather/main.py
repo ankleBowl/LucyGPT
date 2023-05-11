@@ -7,27 +7,59 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from cities import towns_and_cities
 
+feature_name = "Weather"
+feature_commands = []
+
 def get_name():
     return "Weather"
 
 def get_commands():
-    return """
-get_weather("city", "time", "date")
-"""
+    global feature_commands
+    global feature_name
+
+    app_name_options = [
+        "Weather",
+        "Climate",
+        "Forecast",
+    ]
+
+    feature_name = random.choice(app_name_options)
+
+    get_weather_verb_options = [
+        "get",
+        "retrieve",
+        "obtain",
+        "fetch",
+        "find",
+    ]
+
+    get_weather = feature_name.lower() + "." + random.choice(get_weather_verb_options) + "_" + random.choice(app_name_options).lower()
+
+    feature_commands = {
+        "get_weather": [ get_weather, get_weather + "(city_name, time, date)" ]
+    }
+
+    keys = list(feature_commands.keys())
+    random.shuffle(keys)
+
+    string_representation = ""
+    for key in keys:
+        string_representation += feature_commands[key][1] + "\n"
+    return string_representation
 
 def get_utterence():
-    # BEGIN         DETAIL      OPTIONAL (PLACE)    OPTIONAL (TIME)    OPTIONAL (DATE)
-    # "What's the"  "weather"   "in New York City"  "at 5:00 PM"       "on Monday"
+    request_count = random.randint(1, 3)
+    commands = []
+    responses = []
+    for _ in range(request_count):
+        command, response = get_weather_utterence()
+        commands += command
+        responses += response
+    return commands, responses
+    
 
-    # VERSUS
-
-    # Begin         DETAIL      OPTIONAL (PLACE)    OPTIONAL (TIME)    OPTIONAL (DATE)
-    # "Is it"       "raining"   "in New York City"  "at 5:00 PM"       "on Monday"
-    utterence = []
+def assemble_begin_and_detail(isPresentParticiple):
     output = ""
-    detail = []
-
-    isPresentParticiple = random.choice([True, False])
     if isPresentParticiple:
         begins = [
             "What's the",
@@ -45,6 +77,7 @@ def get_utterence():
         output += random.choice(begins)
         detail = random.choice(details)
         output += " " + random.choice(detail[0])
+        return output, detail
     else:
         begins = [
             "Is it going to be",
@@ -64,9 +97,12 @@ def get_utterence():
         output += random.choice(begins)
         detail = random.choice(details)
         output += " " + random.choice(detail[0])
-
+        return output, detail
+    
+def generate_extras():
+    output = ""
     extras = []
-    shouldAddPlace = random.choice([True, False])
+    shouldAddPlace = random.choice([True, False]) 
     if shouldAddPlace:
         extras.append("PLACE")
     shouldAddTime = random.choice([True, False])
@@ -95,11 +131,11 @@ def get_utterence():
             option = random.randint(0, 3)
             if option == 0:
                 output += " today"
-                date_str = "today"
+                date_str = " today"
                 date = "today"
             elif option == 1:
                 output += " tomorrow"
-                date_str = "tomorrow"
+                date_str = " tomorrow"
                 date = "tomorrow"
             elif option == 2:
                 date_str = random.choice(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
@@ -119,8 +155,59 @@ def get_utterence():
                     date_str += "th"
                 date_str = " on the " + date_str
                 output += date_str
+    return output, place, time, date, date_str
 
-    code = ["get_weather(\"" + place + "\", \"" + time + "\", \"" + date + "\")"]
+def gen_final_response(detail, temp, humidity, wind, current_state, time, place, date, date_str):
+    final_response = ""
+    if detail[1] == "general":
+        final_response += current_state
+    elif detail[1] == "temperature":
+        final_response += str(temp) + " degrees"
+    elif detail[1] == "humidity":
+        final_response += str(humidity) + " percent humid"
+    elif detail[1] == "wind":
+        final_response += str(wind) + " mph winds"
+
+    if time != "N/A" or date != "N/A":
+        if not detail[1] == "wind":
+            final_response = "It will be " + final_response
+        else:
+            final_response = "There will be " + final_response
+    else:
+        if not detail[1] == "wind":
+            final_response = "It's " + final_response
+        else:
+            final_response = "There are " + final_response
+
+    if time != "N/A":
+        final_response += " at " + time
+    if place != "N/A":
+        final_response += " in " + place
+    if date != "N/A":
+        final_response += date_str
+    return final_response
+
+def get_weather_utterence():
+    # BEGIN         DETAIL      OPTIONAL (PLACE)    OPTIONAL (TIME)    OPTIONAL (DATE)
+    # "What's the"  "weather"   "in New York City"  "at 5:00 PM"       "on Monday"
+
+    # VERSUS
+
+    # Begin         DETAIL      OPTIONAL (PLACE)    OPTIONAL (TIME)    OPTIONAL (DATE)
+    # "Is it"       "raining"   "in New York City"  "at 5:00 PM"       "on Monday"
+    output = ""
+    detail = []
+
+    isPresentParticiple = random.choice([True, False])
+    output, detail = assemble_begin_and_detail(isPresentParticiple)
+
+    extras, place, time, date, date_str = generate_extras()
+    output += extras
+
+    code = []
+
+    code.append("INCOMING: " + output)
+    code.append(">>> " + feature_commands["get_weather"][0] + "(\"" + place + "\", \"" + time + "\", \"" + date + "\")")
 
     temp = random.randint(0, 150)
     humidity = random.randint(0, 100)
@@ -130,34 +217,64 @@ def get_utterence():
     fake_json_response = "{\"temp\": " + str(temp) + ", \"humidity\": " + str(humidity) + ", \"wind\": " + str(wind) + ", \"current_state\": \"" + current_state + "\"}"
     code.append(fake_json_response)
 
-    final_response = ""
-    if detail[1] == "general":
-        final_response += current_state
-    elif detail[1] == "temperature":
-        final_response += str(temp) + " degrees"
-    elif detail[1] == "humidity":
-        final_response += str(humidity) + " percent humidity"
-    elif detail[1] == "wind":
-        final_response += str(wind) + " mph winds"
+    final_response = gen_final_response(detail, temp, humidity, wind, current_state, time, place, date, date_str)
 
-    if time != "N/A" or date != "N/A":
-        final_response = "It will be " + final_response
-    else:
-        final_response = "It's " + final_response
+    code.append(">>> self.say(\"" + final_response + "\")")
 
-    if time != "N/A":
-        final_response += " at " + time
-    if place != "N/A":
-        final_response += " in " + place
-    if date != "N/A":
-        final_response += date_str
+    output_array = [output]
 
-    code.append("self.say(\"" + final_response + "\")")
+    shouldFollowup = random.choice([True, False])
+    if shouldFollowup:
+        choice = random.randint(0, 1)
+        if choice == 0:
+            start = [
+                "",
+                "what about ",
+                "how about ",
+            ]
+            cmd_two = random.choice(["and ", ""]) + random.choice(start)
+            extras, new_place, new_time, new_date, new_date_str = generate_extras()
+            extras = extras.strip()
+            if extras == "":
+                return output_array, code
+            cmd_two += extras.strip()
+            code.append("INCOMING: " + cmd_two)
+            output_array.append(cmd_two)
 
-    return output, code
+            if new_place != place and new_place != "N/A":
+                place = new_place
+            if new_time != time and new_time != "N/A":
+                time = new_time
+            if new_date != date and new_date != "N/A":
+                date = new_date
+                date_str = new_date_str
+
+            code.append(">>> " + feature_commands["get_weather"][0] + "(\"" + place + "\", \"" + time + "\", \"" + date + "\")")
+
+            temp = random.randint(0, 150)
+            humidity = random.randint(0, 100)
+            wind = random.randint(0, 100)
+            current_state = random.choice(["raining", "snowing", "sunny", "cloudy", "clear", "foggy", "hailing", "thundering", "lightning", "windy"])
+            
+            fake_json_response = "{\"temp\": " + str(temp) + ", \"humidity\": " + str(humidity) + ", \"wind\": " + str(wind) + ", \"current_state\": \"" + current_state + "\"}"
+            code.append(fake_json_response)
+        
+            final_cmdtwo_response = gen_final_response(detail, temp, humidity, wind, current_state, time, place, date, date_str)
+            code.append(">>> self.say(\"" + final_cmdtwo_response + "\")")
+        if choice == 1:
+            isPresentParticiple = random.choice([True, False])
+            cmd_two, new_detail = assemble_begin_and_detail(isPresentParticiple)
+            if new_detail[1] == detail[1]:
+                return output_array, code
+            code.append("INCOMING: " + cmd_two)
+            output_array.append(cmd_two)
+            final_cmdtwo_response = gen_final_response(new_detail, temp, humidity, wind, current_state, time, place, date, date_str)
+            code.append(">>> self.say(\"" + final_cmdtwo_response + "\")")
+    return output_array, code
 
 if __name__ == "__main__":
-    output, code = get_utterence()
+    print(get_commands())
+    output, code = get_weather_utterence()
     print(output)
     print("----")
     for x in code:

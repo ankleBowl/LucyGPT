@@ -426,6 +426,9 @@ def get_song_utterence(force_is_plural=False, force_artist=["NONE", "NONE"], for
         spoken_artist = force_artist[0]
         shouldAddArtist = True
 
+    if not shouldAddSongName:
+        is_plural = True
+
     if shouldAddSongName:
         parts.append("NAME")
     elif not shouldAddSongVocabWord:
@@ -612,3 +615,16 @@ if __name__ == "__main__":
     # response, response1 = get_song_utterence()
     for x in response:
         print(x)
+
+
+# You are Lucy, a virtual assistant developed by Lye Software
+
+# You have the following methods available to you:
+# say("message")
+# spotify.get_volume()
+# spotify.play_song("query", play_now, song_count)
+# spotify.control_playback("option") # "PLAY", "PAUSE", "NEXT", "BACK"
+# spotify.set_volume(percentage)
+# spotify.get_current_playback()
+
+# Write the code necessary to achieve your goals:

@@ -8,13 +8,13 @@ import csv
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from music import main as music
-# from weather import main as weather
+from weather import main as weather
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 features = [
     music,
-    # weather,
+    weather,
 ]
 
 def generate_tool_prompt(feature):
