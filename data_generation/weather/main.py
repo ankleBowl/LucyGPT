@@ -48,14 +48,8 @@ def get_commands():
     return string_representation
 
 def get_utterence():
-    request_count = random.randint(1, 3)
-    commands = []
-    responses = []
-    for _ in range(request_count):
-        command, response = get_weather_utterence()
-        commands += command
-        responses += response
-    return commands, responses
+    command, response = get_weather_utterence()
+    return command, response
     
 
 def assemble_begin_and_detail(isPresentParticiple):

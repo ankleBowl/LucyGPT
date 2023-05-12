@@ -3,12 +3,15 @@ import sys
 import os
 import random
 
+random.seed(0)
+
 import csv
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from music import main as music
 from weather import main as weather
+from conversation import main as conversation
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,20 +43,19 @@ def generate_request_prompt(feature):
     prompt += feature.get_commands().strip() + "\n\n"
 
     prompt += "Write the code necessary to achieve your goals:\n\n"
-    query, code = feature.get_utterence()
-    answer = code
-    return prompt, answer
-
-def format_request_prompt_and_answer(feature):
-    prompt, answer = generate_request_prompt(feature)
-    final_output = ""
-    final_output += prompt
-    for x in answer:
-        final_output += x + "\n"
-    return final_output
+    for _ in range(random.randint(1, 3)):
+        query, code = feature.get_utterence()
+        for line in code:
+            prompt += line + "\n"
+        shouldAddConvo = random.randint(0, 2) == 0
+        if shouldAddConvo:
+            convo = conversation.get_conversation()
+            for line in convo:
+                prompt += line + "\n"
+    return prompt
 
 if __name__ == "__main__":
-    # print(format_request_prompt_and_answer(music))
+    # print(generate_request_prompt(music))
     with open("data.txt", "w") as f:
         index = 0
         for x in range(4000):

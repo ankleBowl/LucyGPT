@@ -129,32 +129,26 @@ song_descriptors = [
 ]
 
 def get_utterence():
-    request_count = random.randint(1, 3)
-    commands = []
-    response = []
-    for _ in range(request_count):
-        pick = random.randint(0, 4)
-        commands_temp = None
-        response_temp = None
+    pick = random.randint(0, 4)
+    commands_temp = None
+    response_temp = None
+    if pick == 0:
+        commands_temp, response_temp = get_song_utterence()
+    if pick == 1:
+        pick = random.randint(0, 2)
         if pick == 0:
-            commands_temp, response_temp = get_song_utterence()
+            commands_temp, response_temp = get_volume_utterence()
         if pick == 1:
-            pick = random.randint(0, 2)
-            if pick == 0:
-                commands_temp, response_temp = get_volume_utterence()
-            if pick == 1:
-                commands_temp, response_temp = get_volume_increment_utterence()
-            if pick == 2:
-                commands_temp, response_temp = get_volume_decrement_utterence()
+            commands_temp, response_temp = get_volume_increment_utterence()
         if pick == 2:
-            commands_temp, response_temp = get_control_playback_utterence()
-        if pick == 3:
-            commands_temp, response_temp = get_current_playing_utterence()
-        if pick == 4:
-            commands_temp, response_temp = get_current_volume_utterence()
-        commands += commands_temp
-        response += response_temp
-    return commands, response
+            commands_temp, response_temp = get_volume_decrement_utterence()
+    if pick == 2:
+        commands_temp, response_temp = get_control_playback_utterence()
+    if pick == 3:
+        commands_temp, response_temp = get_current_playing_utterence()
+    if pick == 4:
+        commands_temp, response_temp = get_current_volume_utterence()
+    return commands_temp, response_temp
     
 def get_control_playback_utterence():
     option = random.randint(0, 3)
@@ -555,7 +549,7 @@ def get_current_playing_utterence():
             pass
         output += commands
         utterence += followup_utterence
-
+        
     return utterence, output
 
 def get_current_volume_utterence():
@@ -628,3 +622,10 @@ if __name__ == "__main__":
 # spotify.get_current_playback()
 
 # Write the code necessary to achieve your goals:
+
+
+
+
+#CHGANGES
+
+# put on "more" from this artist
