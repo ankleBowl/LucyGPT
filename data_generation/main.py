@@ -44,11 +44,18 @@ def generate_request_prompt(feature):
 
     prompt += "Write the code necessary to achieve your goals:\n\n"
     for _ in range(random.randint(1, 3)):
+        shouldAddConvo = random.randint(0, 4)
+        
+        if shouldAddConvo == 0:
+            convo = conversation.get_conversation()
+            for line in convo:
+                prompt += line + "\n"
+
         query, code = feature.get_utterence()
         for line in code:
             prompt += line + "\n"
-        shouldAddConvo = random.randint(0, 2) == 0
-        if shouldAddConvo:
+
+        if shouldAddConvo == 1:
             convo = conversation.get_conversation()
             for line in convo:
                 prompt += line + "\n"
@@ -56,14 +63,26 @@ def generate_request_prompt(feature):
 
 if __name__ == "__main__":
     # print(generate_request_prompt(music))
-    with open("data.txt", "w") as f:
+    with open("train.txt", "w") as f:
         index = 0
         for x in range(4000):
             feature = features[index]
             index = (index + 1) % len(features)
-            f.write(format_request_prompt_and_answer(feature))
+            f.write(generate_request_prompt(feature))
             f.write("---\n")
         for x in range(1000):
+            feature = features[index]
+            index = (index + 1) % len(features)
+            f.write(generate_tool_prompt(feature))
+            
+    with open("val.txt", "w") as f:
+        index = 0
+        for x in range(1000):
+            feature = features[index]
+            index = (index + 1) % len(features)
+            f.write(generate_request_prompt(feature))
+            f.write("---\n")
+        for x in range(100):
             feature = features[index]
             index = (index + 1) % len(features)
             f.write(generate_tool_prompt(feature))

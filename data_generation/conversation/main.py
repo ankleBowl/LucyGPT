@@ -41,6 +41,7 @@ def get_conversation():
         output_lines.append(line)
     return output_lines
 
-message = get_conversation()
-for line in message:
-    print(line)
+if __name__ == "__main__":
+    message = get_conversation()
+    for line in message:
+        print(line)
