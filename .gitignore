@@ -4,3 +4,4 @@ __pycache__
 data.txt
 train.txt
 val.txt
+data_generation/train.json

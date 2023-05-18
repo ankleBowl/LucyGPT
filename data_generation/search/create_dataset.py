@@ -4,7 +4,8 @@ import random
 import openai
 import time
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = "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"
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -35,14 +36,14 @@ Use only the data above for your answer. Your answer should be short (1 to 2 sen
 
 def search_ddg(search_term):
     waiting_time = 1
-    try:
-        while (True):
+    while (True):
+        try:
             url = 'https://html.duckduckgo.com/html?q=' + search_term.replace(' ', '%20')
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) '
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15'
             }
             response = requests.get(url, headers=headers)
-
+            print("DDG RESPONSE: " + response.text[:100])
             soup = bs4.BeautifulSoup(response.text, 'html.parser')
             links = soup.find(id='links')
             links = links.find_all(class_='links_main')
@@ -58,16 +59,15 @@ def search_ddg(search_term):
                 formatted_links.append({"title": page_title, "url": page_url, "description": page_description})
                 if (len(formatted_links) == 4):
                     break
-
             output = ""
             for flink in formatted_links:
                 output += flink["title"] + "\n" + flink["description"] + "\n\n"
-
             return output.strip()
-    except:
-        waiting_time = waiting_time * 2
-        print("Request Errored, waiting for " + str(waiting_time) + " seconds")
-        time.sleep(waiting_time)
+        except Exception as e:
+            print("Error: " + str(e))
+            waiting_time = waiting_time * 2
+            print("Request Errored, waiting for " + str(waiting_time) + " seconds")
+            time.sleep(waiting_time)
 
 
 def get_openai_completion(question):
@@ -83,22 +83,23 @@ def get_openai_completion(question):
                 temperature=0.0,
             )
             has_repsonse = True
-        except:
+        except Exception as e:
+            print(e)
             waiting_time = waiting_time * 2
             print("Request Errored, waiting for " + str(waiting_time) + " seconds")
             time.sleep(waiting_time)
     return response["choices"][0]["message"]["content"]
 
 def create_data_point(question):
+    print("Creating data point for question: " + question)
     query = get_openai_completion(search_term_prompt + question).split(":")[1].strip()
+    print("Query: " + query)
     search_results = search_ddg(query)
     
     extract_result_prompt = get_answer_prompt.replace("(DATA)", search_results)
     extract_result_prompt = extract_result_prompt.replace("(QUESTION)", question)
     answer = get_openai_completion(extract_result_prompt)
 
-    print("Question: " + question)
-    print("Query: " + query)
     print("Results:\n" + search_results + "\n")
     print("Answer: " + answer)
 
@@ -112,8 +113,10 @@ with open("questions.txt") as f:
 
 import json
 
-START_ON = 0
-with open("data.json", "w") as f:
+# print(search_ddg("openai latest news"))
+
+START_ON = 1571 # START ON THE EMPTY LINE NUMBRE
+with open("data.json", "a") as f:
     i = 0
     for question in questions:
         i += 1

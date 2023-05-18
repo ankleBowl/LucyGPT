@@ -531,7 +531,7 @@ def get_current_playing_utterence():
     output.append(">>> self.say(\"" + random.choice(reply_options) + "\")")
     utterence = [utterence]
 
-    shouldHaveTrailingCommand = random.choice([True, False])
+    shouldHaveTrailingCommand = random.choice([True, True])
     if shouldHaveTrailingCommand:
         choice = random.randint(0, 1)
         # Play that song again
