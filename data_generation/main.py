@@ -13,6 +13,7 @@ from music import main as music
 from weather import main as weather
 from conversation import main as conversation
 from search import main as search
+from timerlucy import main as timer
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,6 +21,7 @@ features = [
     music,
     weather,
     search,
+    timer,
 ]
 
 feature_weights = [

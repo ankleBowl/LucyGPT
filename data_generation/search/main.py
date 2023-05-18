@@ -20,7 +20,7 @@ feature_name = "Search"
 feature_commands = {}
 
 def get_name():
-    return "Search"
+    return feature_name
 
 def get_commands():
 
