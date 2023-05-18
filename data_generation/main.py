@@ -84,6 +84,8 @@ def generate_request_prompt():
 
 import json
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 if __name__ == "__main__":
     print(generate_request_prompt())
     with open("train.json", "w") as f:
