@@ -1,7 +1,8 @@
-# from data_generation.music import main as music
 import sys
 import os
 import random
+
+working_dir = os.getcwd()
 
 random.seed(0)
 
@@ -28,6 +29,7 @@ feature_weights = [
     2,
     2,
     1,
+    2,
 ]
 
 conversation_frequency = 5 # 0 FOR ALWAYS, HIGHER NUMBERS ARE LESS FREQUENT
@@ -36,22 +38,6 @@ weighted_features = []
 for i in range(len(features)):
     for _ in range(feature_weights[i]):
         weighted_features.append(features[i])
-
-# def generate_tool_prompt(feature):
-#     queries, _ = feature.get_utterence()
-#     prompt = ""
-#     answer = ""
-#     for query in queries:
-#         prompt += "You are Lucy, a virtual assistant developed by Lye Software. You have the following tools available to you:\n"
-#         for f in features:
-#             f.get_commands()
-#             prompt += f"- {f.get_name()}\n"
-#         prompt += "\n"
-#         prompt += "Decide the most relevant tool to answer the following input:\n"
-#         prompt += "- " + query
-#         prompt += "\n\n>>> " + feature.get_name()
-#         prompt += "\n---\n"
-#     return prompt
 
 def generate_request_prompt():
     global features
@@ -90,20 +76,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
     print(generate_request_prompt())
-    with open("train.json", "w") as f:
+    with open(working_dir + "/train.json", "w") as f:
         out = []
-        for x in range(4088):
+        for x in range(5000):
             out.append({"text": generate_request_prompt()})
         f.write(json.dumps(out))
-            
-    # with open("val.txt", "w") as f:
-    #     index = 0
-    #     for x in range(1000):
-    #         feature = features[index]
-    #         index = (index + 1) % len(features)
-    #         f.write(generate_request_prompt(feature))
-    #         f.write("---\n")
-        # for x in range(100):
-        #     feature = features[index]
-        #     index = (index + 1) % len(features)
-        #     f.write(generate_tool_prompt(feature))

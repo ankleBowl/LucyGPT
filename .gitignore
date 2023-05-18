@@ -2,6 +2,5 @@
 .DS_Store
 __pycache__
 data.txt
-train.txt
-val.txt
+train.json
 data_generation/train.json
