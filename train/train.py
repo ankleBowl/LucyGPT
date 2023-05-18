@@ -23,12 +23,12 @@ dataset = load_dataset("json", data_files={"train": "data_generation/train.json"
 def tokenize_function(examples):
     return tokenizer(examples["text"])
 tokenized_datasets = dataset.map(tokenize_function, batched=True)
+print(tokenized_datasets)
 
 # CREATE TRAINER
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 training_args = TrainingArguments(
     output_dir="test_trainer", 
-    remove_unused_columns=False, 
     label_names=["labels"]
 )
 trainer = Trainer(
