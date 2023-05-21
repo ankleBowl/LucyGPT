@@ -1,9 +1,28 @@
 # THIS ONE IS LIKE, ALL GPT-4
-
 import random
 
 feature_name = "Alarm"
 feature_commands = {}
+
+def generate_random_hour():
+    # THIS IS BAD CODE BUT WHO ASKED (THANKS GPT-4)
+    hour_24 = random.randint(1, 24)
+    if hour_24 == 24:
+        hour_24 = 0
+    if hour_24 > 12:
+        hour_12 = hour_24 - 12
+        am_pm = "PM"
+    elif hour_24 == 12:
+        hour_12 = hour_24
+        am_pm = "PM"
+    elif hour_24 == 0:
+        hour_12 = 12
+        am_pm = "AM"
+    else:
+        hour_12 = hour_24
+        am_pm = "AM"
+    return hour_12, am_pm, f"{hour_12} {am_pm}"
+
 
 def get_commands():
     global feature_name
@@ -52,25 +71,6 @@ def get_commands():
         string_representation += feature_commands[key][1] + "\n"
     return string_representation
 
-def generate_random_hour():
-    # THIS IS BAD CODE BUT WHO ASKED (THANKS GPT-4)
-    hour_24 = random.randint(1, 24)
-    if hour_24 == 24:
-        hour_24 = 0
-    if hour_24 > 12:
-        hour_12 = hour_24 - 12
-        am_pm = "PM"
-    elif hour_24 == 12:
-        hour_12 = hour_24
-        am_pm = "PM"
-    elif hour_24 == 0:
-        hour_12 = 12
-        am_pm = "AM"
-    else:
-        hour_12 = hour_24
-        am_pm = "AM"
-    return hour_12, am_pm, f"{hour_12} {am_pm}"
-
 # Generate a random question
 def get_create_alarm_utterence(is_cancel=False):
     greetings = ["Can you", "Could you", "Would you mind", "Please", "I need you to", "I'd like you to", ""]
@@ -93,13 +93,39 @@ def get_create_alarm_utterence(is_cancel=False):
     polite = random.choice(politeness)
 
     # Assemble the question
-    question = f"{greeting} {action} an alarm {preposition} {time_period} {polite}"
+    shouldHaveTime = random.randint(0, 1) == 1
+    if shouldHaveTime:
+        question = f"{greeting} {action} an alarm {preposition} {time_period} {polite}"
+    else:
+        question = f"{greeting} {action} an alarm {polite}"
 
     # Remove any extra spaces
     question = " ".join(question.split())
     
     utterence = [question]
     output = ["INCOMING: " + question]
+    
+    if not shouldHaveTime:
+        output.append(">>> self.say(\"For what time?\")")
+        
+        shouldHaveVerb = random.randint(0, 1) == 1
+        if shouldHaveVerb:
+            greeting = random.choice(greetings)
+            action = random.choice(actions)
+            if greeting == "Would you mind":
+                action = random.choice(actions_ing)
+        else:
+            greeting = ""
+            action = ""
+        preposition = random.choice(prepositions)
+        polite = random.choice(politeness)
+        
+        if shouldHaveVerb:
+            response = f"{greeting} {action} it {preposition} {time_period} {polite}"
+        else:
+            response = f"{preposition} {time_period}"
+        utterence.append(response)
+        output.append("INCOMING: " + response)
     
     # Generate the command
     if (not is_cancel):
@@ -150,8 +176,8 @@ def get_list_alarm_utterence():
         response = "You do not have any alarms set."
 
     # JSON representation of the alarms
-    json_alarms = [{"hour": alarm[0], "ampm": alarm[1]} for alarm in alarms]
-
+    json_alarms = str([{"hour": alarm[0], "ampm": alarm[1]} for alarm in alarms])
+    
     output = []
     output.append("INCOMING: " + question)
     output.append(">>> " + get_alarms_command)
@@ -172,7 +198,7 @@ def get_utterence():
 
 # Generate a large number of questions
 if __name__ == "__main__":
-    get_commands()
+    print(get_commands())
     
     utterence, output = get_utterence()
     for x in output:

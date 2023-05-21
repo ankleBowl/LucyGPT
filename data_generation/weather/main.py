@@ -7,8 +7,29 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from cities import towns_and_cities
 
+def generate_random_hour():
+    # THIS IS BAD CODE BUT WHO ASKED (THANKS GPT-4)
+    hour_24 = random.randint(1, 24)
+    if hour_24 == 24:
+        hour_24 = 0
+    if hour_24 > 12:
+        hour_12 = hour_24 - 12
+        am_pm = "PM"
+    elif hour_24 == 12:
+        hour_12 = hour_24
+        am_pm = "PM"
+    elif hour_24 == 0:
+        hour_12 = 12
+        am_pm = "AM"
+    else:
+        hour_12 = hour_24
+        am_pm = "AM"
+    return hour_12, am_pm, f"{hour_12} {am_pm}"
+
+
 feature_name = "Weather"
-feature_commands = []
+feature_commands = {}
+
 
 def get_name():
     return feature_name
@@ -117,9 +138,7 @@ def generate_extras():
             place = random.choice(towns_and_cities)
             output += " in " + place
         elif x == "TIME":
-            hours = random.randint(1, 12)
-            ampm = random.choice(["AM", "PM"])
-            time = str(hours) + ":00 " + ampm
+            _, _, time = generate_random_hour()
             output += " at " + time
         elif x == "DATE":
             option = random.randint(0, 3)

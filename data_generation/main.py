@@ -55,8 +55,8 @@ def generate_request_prompt():
 
     prompt += "\n"
     for _ in range(random.randint(1, 3)):
-        picked_feature = random.choice(weighted_features)
         shouldAddConvo = random.randint(0, conversation_frequency + 1)
+        picked_feature = random.choice(weighted_features)
         
         if shouldAddConvo == 0:
             convo = conversation.get_conversation()
@@ -73,17 +73,47 @@ def generate_request_prompt():
                 prompt += line + "\n"
     return prompt
 
+def generate_single_request_prompt(feature):
+    prompt = 'You are Lucy, a virtual assistant developed by Lye Software\n\n'
+    prompt += 'You have the following methods available to you:\n'
+    prompt += 'self.say("message")\n'
+
+    prompt += feature.get_commands().strip() + "\n"
+
+    prompt += "\n"
+    shouldAddConvo = random.randint(0, conversation_frequency + 1)
+    
+    if shouldAddConvo == 0:
+        convo = conversation.get_conversation()
+        for line in convo:
+            prompt += line + "\n"
+
+    query, code = feature.get_utterence()
+    for line in code:
+        prompt += line + "\n"
+
+    if shouldAddConvo == 1:
+        convo = conversation.get_conversation()
+        for line in convo:
+            prompt += line + "\n"
+    return prompt
+
 import json
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
-    print(generate_request_prompt())
     with open(working_dir + "/train.json", "w") as f:
         out = []
-        for x in range(6000):
-            out.append({"text": generate_request_prompt()})
+        for x in range(15000):
+            out.append({"text": generate_single_request_prompt(weighted_features[x % len(weighted_features)])})
         f.write(json.dumps(out))
+    
+    # with open(working_dir + "/train.json", "w") as f:
+    #     out = []
+    #     for x in range(6000):
+    #         out.append({"text": generate_request_prompt()})
+    #     f.write(json.dumps(out))
     # with open(working_dir + "/val.json", "w") as f:
     #     out = []
     #     for x in range(1000):

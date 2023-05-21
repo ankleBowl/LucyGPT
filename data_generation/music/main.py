@@ -9,7 +9,7 @@ from songs import songs
 import random
 
 feature_name = "Spotify"
-feature_commands = []
+feature_commands = {}
 
 def get_name():
     return feature_name
@@ -246,6 +246,7 @@ def get_control_playback_utterence():
             utterence += " " + random.choice(back_modifiers_modifiers)
         output = ["INCOMING: " + utterence, ">>> " + feature_commands["control_playback"][0] + "(\"BACK\")"]
         return [utterence], output
+    return None, None
 
 def get_volume_utterence():
     volume = random.randint(0, 100)
@@ -537,8 +538,8 @@ def get_current_playing_utterence():
         # Play that song again
         # Play songs by that artist
         # Play songs from that album
-        followup_utterence = None
-        commands = None
+        followup_utterence = ""
+        commands = []
         if choice == 0:
             artist = random.choice(["them", "that artist"])
             followup_utterence, commands = get_song_utterence(force_artist=[artist, artist_name], force_is_plural=True)
