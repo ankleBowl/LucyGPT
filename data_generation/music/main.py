@@ -531,7 +531,7 @@ def get_current_playing_utterence():
     output.append(">>> self.say(\"" + random.choice(reply_options) + "\")")
     utterence = [utterence]
 
-    shouldHaveTrailingCommand = random.choice([True, True])
+    shouldHaveTrailingCommand = random.choice([False, True])
     if shouldHaveTrailingCommand:
         choice = random.randint(0, 1)
         # Play that song again
@@ -549,7 +549,6 @@ def get_current_playing_utterence():
             pass
         output += commands
         utterence += followup_utterence
-        
     return utterence, output
 
 def get_current_volume_utterence():

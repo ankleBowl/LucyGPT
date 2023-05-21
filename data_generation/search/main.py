@@ -63,7 +63,7 @@ def get_utterence():
     output = []
     output.append("INCOMING: " + example[0])
     output.append(">>> self.search_google(\"" + example[1] + "\")")
-    output.append("{\"results\": \"" + example[2] + "\"}")
+    output.append("{\"results\": \"" + example[3] + "\"}")
     output.append(">>> self.say(\"" + example[3] + "\"")
     return example[0], output
 

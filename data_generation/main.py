@@ -15,6 +15,7 @@ from weather import main as weather
 from conversation import main as conversation
 from search import main as search
 from timerlucy import main as timer
+from alarm import main as alarm
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,16 +24,18 @@ features = [
     weather,
     search,
     timer,
+    alarm,
 ]
 
 feature_weights = [
-    2,
-    2,
+    4,
+    3,
     1,
-    2,
+    3,
+    3,
 ]
 
-conversation_frequency = 5 # 0 FOR ALWAYS, HIGHER NUMBERS ARE LESS FREQUENT
+conversation_frequency = 8 # 0 FOR ALWAYS, HIGHER NUMBERS ARE LESS FREQUENT
 
 weighted_features = []
 for i in range(len(features)):
@@ -41,7 +44,7 @@ for i in range(len(features)):
 
 def generate_request_prompt():
     global features
-
+    
     prompt = 'You are Lucy, a virtual assistant developed by Lye Software\n\n'
     prompt += 'You have the following methods available to you:\n'
     prompt += 'self.say("message")\n'
@@ -78,6 +81,11 @@ if __name__ == "__main__":
     print(generate_request_prompt())
     with open(working_dir + "/train.json", "w") as f:
         out = []
-        for x in range(5000):
+        for x in range(6000):
             out.append({"text": generate_request_prompt()})
         f.write(json.dumps(out))
+    # with open(working_dir + "/val.json", "w") as f:
+    #     out = []
+    #     for x in range(1000):
+    #         out.append({"text": generate_request_prompt()})
+    #     f.write(json.dumps(out))

@@ -9928,3 +9928,13 @@ songs = [
     ["Brighter Than Gold", "The Cat Empire", "Steal the Light"],
     ["Fury of the Storm - Live", "DragonForce", "Twilight Dementia"],
 ]
+
+special_songs = [
+    ["The Way You Felt", "Alec Benjamin", "Uncommentary"],
+    ["2002", "Anne-Marie", "Speak Your Mind"],
+    ["Favorite T-shirt", "Jake Scott", "Year of the Sunflower"],
+]
+
+for x in range(8):
+    for song in special_songs:
+        songs.append(song)

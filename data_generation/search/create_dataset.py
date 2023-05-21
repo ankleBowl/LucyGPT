@@ -113,15 +113,15 @@ with open("questions.txt") as f:
 
 import json
 
-# print(search_ddg("openai latest news"))
+print(search_ddg("WWDC release date"))
 
-START_ON = 1571 # START ON THE EMPTY LINE NUMBRE
-with open("data.json", "a") as f:
-    i = 0
-    for question in questions:
-        i += 1
-        if (i < START_ON):
-            continue
-        data_point = create_data_point(question)
-        f.write(json.dumps(data_point) + "\n")
-        f.flush()
+# START_ON = 1571 # START ON THE EMPTY LINE NUMBRE
+# with open("data.json", "a") as f:
+#     i = 0
+#     for question in questions:
+#         i += 1
+#         if (i < START_ON):
+#             continue
+#         data_point = create_data_point(question)
+#         f.write(json.dumps(data_point) + "\n")
+#         f.flush()
