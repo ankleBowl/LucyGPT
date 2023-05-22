@@ -6,6 +6,7 @@ ADAPTERS_NAME='RedPajama-LoRA' #@param {type: "string"}
 import wandb
 import torch 
 import torch.nn as nn 
+import time
 import json
 import transformers 
 from datasets import Dataset, load_dataset
@@ -62,6 +63,9 @@ def tokenize_function(examples):
     return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=256)
 dataset = dataset.map(tokenize_function, batched=True, remove_columns=["text"])
 dataset = dataset["train"]
+
+wandb.init(project="lucygpt-redpajama-base-3b", 
+           name=str(time.time()))
 
 trainer = transformers.Trainer(
     model=model, 
