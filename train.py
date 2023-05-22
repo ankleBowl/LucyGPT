@@ -1,8 +1,9 @@
 base_model_hf = "togethercomputer/RedPajama-INCITE-Chat-3B-v1" #@param {type: "string"}
-finetune_epochs = 1 #@param {type: "integer"}
+finetune_epochs = 5 #@param {type: "integer"}
 
 ADAPTERS_NAME='RedPajama-LoRA' #@param {type: "string"}
 
+import wandb
 import torch 
 import torch.nn as nn 
 import json
@@ -66,15 +67,15 @@ trainer = transformers.Trainer(
     model=model, 
     train_dataset=dataset,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=4, 
-        gradient_accumulation_steps=4,
-        warmup_steps=80, 
+        per_device_train_batch_size=16, 
+        gradient_accumulation_steps=16,
+        warmup_steps=20, 
         learning_rate=2e-4, 
         fp16=True,
         num_train_epochs=finetune_epochs,
         logging_steps=1, 
         output_dir='outputs',
-        report_to="none"
+        report_to="wandb"
     ),
     data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False)
 )
@@ -82,5 +83,8 @@ trainer = transformers.Trainer(
 model.config.use_cache = False
 
 import os
-os.environ["WANDB_DISABLED"] = "true"
 trainer.train()
+
+wandb.finish()
+
+model.save_pretrained(f"{ADAPTERS_NAME}")
