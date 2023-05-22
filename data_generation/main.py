@@ -17,8 +17,6 @@ from search import main as search
 from timerlucy import main as timer
 from alarm import main as alarm
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
 features = [
     music,
     weather,
@@ -99,8 +97,6 @@ def generate_single_request_prompt(feature):
     return prompt
 
 import json
-
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
     with open(working_dir + "/train.json", "w") as f:
