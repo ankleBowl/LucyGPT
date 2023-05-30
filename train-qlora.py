@@ -36,7 +36,7 @@ from peft import LoraConfig, get_peft_model
 config = LoraConfig(
     r=8, 
     lora_alpha=32, 
-    target_modules=["query_key_value"], 
+    target_modules=['Wqkv'],
     lora_dropout=0.05, 
     bias="none", 
     task_type="CAUSAL_LM"
@@ -59,12 +59,12 @@ dataset = dataset["train"]
 
 trainer = transformers.Trainer(
     model=model,
-    train_dataset=data["train"],
+    train_dataset=dataset,
     args=transformers.TrainingArguments(
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
         warmup_steps=2,
-        max_steps=10,
+        max_steps=200,
         learning_rate=2e-4,
         fp16=True,
         logging_steps=1,
