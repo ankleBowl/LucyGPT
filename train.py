@@ -1,9 +1,14 @@
-base_model_hf = "togethercomputer/RedPajama-INCITE-Chat-3B-v1" #@param {type: "string"}
-finetune_epochs = 5 #@param {type: "integer"}
+# base_model_hf = "togethercomputer/RedPajama-INCITE-Chat-3B-v1"
+# tokenizer_model_hf = "togethercomputer/RedPajama-INCITE-Chat-3B-v1"
 
-ADAPTERS_NAME='RedPajama-LoRA' #@param {type: "string"}
+base_model_hf = "mosaicml/mpt-7b-chat"
+tokenizer_model_hf = "EleutherAI/gpt-neox-20b"
 
-import wandb
+finetune_epochs = 2
+
+ADAPTERS_NAME='LucyGPT-LoRA'
+
+# import wandb
 import torch 
 import torch.nn as nn 
 import time
@@ -14,11 +19,12 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
 
 model = AutoModelForCausalLM.from_pretrained(
-    "togethercomputer/RedPajama-INCITE-Chat-3B-v1", 
+    base_model_hf,
     device_map='auto',
+    trust_remote_code=True,
 )
 
-tokenizer = AutoTokenizer.from_pretrained("togethercomputer/RedPajama-INCITE-Chat-3B-v1")
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_model_hf)
 tokenizer.pad_token = tokenizer.eos_token
 
 for param in model.parameters():
@@ -64,8 +70,7 @@ def tokenize_function(examples):
 dataset = dataset.map(tokenize_function, batched=True, remove_columns=["text"])
 dataset = dataset["train"]
 
-wandb.init(project="lucygpt-redpajama-base-3b", 
-           name=str(time.time()))
+# wandb.init(project="lucygpt-redpajama-base-3b", name=str(time.time()))
 
 trainer = transformers.Trainer(
     model=model, 
@@ -79,16 +84,15 @@ trainer = transformers.Trainer(
         num_train_epochs=finetune_epochs,
         logging_steps=1, 
         output_dir='outputs',
-        report_to="wandb"
+        # report_to="wandb"
     ),
     data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False)
 )
 
 model.config.use_cache = False
 
-import os
 trainer.train()
 
-wandb.finish()
+# wandb.finish()
 
 model.save_pretrained(f"{ADAPTERS_NAME}")
