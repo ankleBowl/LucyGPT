@@ -50,6 +50,13 @@ import transformers
 # needed for gpt-neo-x tokenizer
 tokenizer.pad_token = tokenizer.eos_token
 
+from datasets import load_dataset
+dataset = load_dataset("json", data_files={"train": "train.json"})
+def tokenize_function(examples):
+    return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=256)
+dataset = dataset.map(tokenize_function, batched=True, remove_columns=["text"])
+dataset = dataset["train"]
+
 trainer = transformers.Trainer(
     model=model,
     train_dataset=data["train"],
