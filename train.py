@@ -1,7 +1,7 @@
 # base_model_hf = "togethercomputer/RedPajama-INCITE-Chat-3B-v1"
 # tokenizer_model_hf = "togethercomputer/RedPajama-INCITE-Chat-3B-v1"
 
-base_model_hf = "mosaicml/mpt-7b-chat"
+base_model_hf = "Birchlabs/mosaicml-mpt-7b-chat-qlora"
 tokenizer_model_hf = "EleutherAI/gpt-neox-20b"
 
 finetune_epochs = 2
