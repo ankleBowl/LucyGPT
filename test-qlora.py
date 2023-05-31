@@ -16,7 +16,7 @@ model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_c
 
 from peft import PeftModel
 
-model = PeftModel.from_pretrained(model, "LucyGPT", is_trainable=True)
+model = PeftModel.from_pretrained(model, "LucyGPT")
 
 text = "You are Lucy"
 
