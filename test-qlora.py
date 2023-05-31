@@ -14,13 +14,9 @@ tokenizer = AutoTokenizer.from_pretrained(model_id)
 tokenizer.pad_token = tokenizer.eos_token
 model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map={"":0},trust_remote_code=True)
 
-from peft import LoraConfig, get_peft_model
+from peft import PeftModel
 
-config = LoraConfig.from_pretrained("LucyGPT")
-
-model = get_peft_model(model, config)
-# model.load_adapter("LucyGPT", "LucyGPT")
-model.set_adapter("LucyGPT")
+model = PeftModel.from_pretrained(model, "LucyGPT", is_trainable=True)
 
 text = "You are Lucy"
 
